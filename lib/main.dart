@@ -92,7 +92,7 @@ class _HomePageState extends State<HomePage> {
         title: const Text(
           'Moopens Sales Mate',
           style: TextStyle(
-            fontSize: 20, // Reduce title size
+            fontSize: 22, // Reduce title size
             color: Colors.white,
           ),
         ),
@@ -137,6 +137,12 @@ class _HomePageState extends State<HomePage> {
                 ElevatedButton(
                   onPressed: _getInfo,
                   child: const Text('Get Info'),
+                  style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                  textStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
                 ),
                 const SizedBox(height: 20),
                 _sectionName.isNotEmpty
