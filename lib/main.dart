@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:new_version_plus/new_version_plus.dart';
 
 void main() {
   runApp(SalesApp());
@@ -29,10 +30,35 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    _checkVersion();
+  }
+
+  void _checkVersion() async {
+    final newVersion = NewVersionPlus(androidId: "com.sunsenz.salesapp"); // Replace with your app's package name
+    final status = await newVersion.getVersionStatus();
+
+    if (status != null && status.canUpdate) {
+      newVersion.showUpdateDialog(
+        context: context,
+        versionStatus: status,
+        dialogTitle: 'Update Available',
+        dialogText: 'A new version of the app is available! Please update to continue.',
+        updateButtonText: 'Update Now',
+        dismissButtonText: 'Later',
+        dismissAction: () {
+          _navigateToHome();
+        },
+      );
+    } else {
+      _navigateToHome();
+    }
+  }
+
+  void _navigateToHome() {
     Timer(Duration(seconds: 3), () {
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => HomePage(), // Navigate to HomePage after 3 seconds
-      ));
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
     });
   }
 
