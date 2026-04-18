@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:new_version_plus/new_version_plus.dart';
 
 void main() {
   runApp(SalesApp());
@@ -30,46 +29,27 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _checkVersion();
-  }
-
-  void _checkVersion() async {
-    final newVersion = NewVersionPlus(androidId: "com.sunsenz.salesapp"); // Replace with your app's package name
-    final status = await newVersion.getVersionStatus();
-
-    if (status != null && status.canUpdate) {
-      newVersion.showUpdateDialog(
-        context: context,
-        versionStatus: status,
-        dialogTitle: 'Update Available',
-        dialogText: 'A new version of the app is available! Please update to continue.',
-        updateButtonText: 'Update Now',
-        dismissButtonText: 'Later',
-        dismissAction: () {
-          _navigateToHome();
-        },
-      );
-    } else {
-      _navigateToHome();
-    }
+    _navigateToHome();   // Directly navigate after showing splash
   }
 
   void _navigateToHome() {
-    Timer(Duration(seconds: 3), () {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
+    Timer(const Duration(seconds: 3), () {
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Set background color for splash screen
+      backgroundColor: Colors.white,
       body: Center(
         child: Image.asset(
-          'assets/Logo-RBG.png', // Replace 'splash.png' with your splash screen image
-          width: MediaQuery.of(context).size.width * 0.7, // Adjust width as needed
+          'assets/Logo-RBG.png',
+          width: MediaQuery.of(context).size.width * 0.7,
         ),
       ),
     );
@@ -88,24 +68,24 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _getInfo() async {
     String consumerNumber = _consumerNumberController.text;
-
-    // Construct the URL to your PHP script
     String apiUrl = 'https://salesapp.sunsenz.com/get_info.php';
 
-    // Make a POST request to your PHP script
-    var response = await http.post(Uri.parse(apiUrl), body: {
-      'consumer_number': consumerNumber,
-    });
-
-    if (response.statusCode == 200) {
-      // Decode the response body
-      Map<String, dynamic> data = jsonDecode(response.body);
-      setState(() {
-        _sectionName = data['section_name'];
-        _divisionName = data['division_name'];
+    try {
+      var response = await http.post(Uri.parse(apiUrl), body: {
+        'consumer_number': consumerNumber,
       });
-    } else {
-      print('Error fetching data');
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = jsonDecode(response.body);
+        setState(() {
+          _sectionName = data['section_name'] ?? '';
+          _divisionName = data['division_name'] ?? '';
+        });
+      } else {
+        print('Error: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Network error: $e');
     }
   }
 
@@ -113,12 +93,12 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF070578), // Set background color to #070578
-        centerTitle: true, // Move title to center
+        backgroundColor: const Color(0xFF070578),
+        centerTitle: true,
         title: const Text(
           'Moopens Sales Mate',
           style: TextStyle(
-            fontSize: 22, // Reduce title size
+            fontSize: 22,
             color: Colors.white,
           ),
         ),
@@ -132,10 +112,10 @@ class _HomePageState extends State<HomePage> {
               children: [
                 const SizedBox(height: 30),
                 SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.7, // Adjust the width as needed
+                  width: MediaQuery.of(context).size.width * 0.7,
                   child: Image.asset(
-                    'assets/logo-sunsenz.png', // Replace 'your_image.png' with the actual image asset path
-                    fit: BoxFit.contain, // Ensure the image fits within the container
+                    'assets/logo-sunsenz.png',
+                    fit: BoxFit.contain,
                   ),
                 ),
                 const SizedBox(height: 35),
@@ -164,26 +144,26 @@ class _HomePageState extends State<HomePage> {
                   onPressed: _getInfo,
                   child: const Text('Get Info'),
                   style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-                  textStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                    textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
                 ),
                 const SizedBox(height: 20),
                 _sectionName.isNotEmpty
                     ? Column(
                         children: [
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.center, // Align horizontally in the center
-                            crossAxisAlignment: CrossAxisAlignment.center, // Align vertically in the center
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               const Text(
                                 'Section / Subdivision Name: ',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 17,
-                                  color: Colors.black, // Change the color of the label to black
+                                  color: Colors.black,
                                 ),
                               ),
                               Text(
@@ -191,22 +171,22 @@ class _HomePageState extends State<HomePage> {
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
-                                  color: Color(0xFF0da881), // Color of the data
+                                  color: Color(0xFF0da881),
                                 ),
                               ),
                             ],
                           ),
                           const SizedBox(height: 10),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.center, // Align horizontally in the center
-                            crossAxisAlignment: CrossAxisAlignment.center, // Align vertically in the center
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               const Text(
                                 'Division Name: ',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 17,
-                                  color: Colors.black, // Change the color of the label to black
+                                  color: Colors.black,
                                 ),
                               ),
                               Text(
@@ -214,7 +194,7 @@ class _HomePageState extends State<HomePage> {
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
-                                  color: Color(0xFFa80d3e), // Color of the data
+                                  color: Color(0xFFa80d3e),
                                 ),
                               ),
                             ],
